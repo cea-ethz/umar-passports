@@ -1,0 +1,12 @@
+{
+  "description": "This duck is the pet to the UMAR unit at NEST. It is made of plastic.",
+  "external_url": "http://nest-umar.net/",
+  "animation_url": "ipfs://QmTwQbBGzNfxXyS11keseiraTFRxn8HVMmLqVWTsGTNPpQ",
+  "name": "UMAR Unit Pet Duck",
+  "attributes": [
+    {
+      "trait_type": "UMAR Unit COMPAS GUID",
+      "value": "cd93dac8-5f01-46b9-9017-116a8968f396"
+    }
+  ]
+}

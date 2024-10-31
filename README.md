@@ -26,6 +26,18 @@ npx hardhat ignition deploy ignition/modules/UmarPassport.ts --network localhost
 
 ## Deployment on Sepolia
 
-Do the same steps as for the local deployment but using `--network sepolia`. First, make sure that your account has enough Sepolia ETH to deploy the contract. You can grab free SepoliaETH here:
+First, make sure that your account has enough Sepolia ETH to deploy the contract. You can grab free SepoliaETH here:
 
 - [Sepolia Faucet](https://www.sepoliafaucet.io/)
+
+You can also estimate the deployment gas fees by running:
+
+```bash
+npx hardhat run scripts/estimateDeploymentGas.ts --network sepolia
+```
+
+Finally, deploy the Umar Passport contract using an arbitrary deployment id:
+
+```bash
+npx hardhat ignition deploy ignition/modules/UmarPassport.ts --network sepolia --deployment-id <arbitrary-deployment-id>
+```
