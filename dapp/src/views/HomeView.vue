@@ -43,6 +43,15 @@
       </v-card-title>
       <v-card-text>
         <p style="font-weight: bold; margin-bottom: 8px">NFT</p>
+        <v-btn
+          :href="`https://testnets.opensea.io/assets/sepolia/0xb8Bb0430e7c3392642Cd141824FBf7D300F18901/${dialog.data.tokenId}`"
+          target="_blank"
+          variant="outlined"
+          color="primary"
+          size="small"
+        >
+          View NFT on OpenSea
+        </v-btn>
       </v-card-text>
       <v-card-text>
         <p style="font-weight: bold; margin-bottom: 8px">Material Passport</p>
@@ -169,7 +178,7 @@ export default {
       grid.rotation.x = Math.PI / 2;
       scene.add(grid);
     },
-    addMesh(vertices, edges, faces, jsonData) {
+    addMesh(tokenId, vertices, edges, faces, jsonData) {
       const positions = new THREE.Float32BufferAttribute(vertices, 3);
       const meshgeometry = new THREE.BufferGeometry();
       meshgeometry.setAttribute("position", positions);
@@ -180,9 +189,8 @@ export default {
       });
       const mesh = new THREE.Mesh(meshgeometry, meshmaterial);
       mesh.userData.interactive = true;
-      if (jsonData) {
-        mesh.userData.data = jsonData;
-      }
+      mesh.userData.data = jsonData;
+      mesh.userData.data.tokenId = tokenId;
       this.selectableMeshes.push(mesh);
 
       const linegeometry = new THREE.BufferGeometry();
@@ -224,15 +232,15 @@ export default {
       if (intersects.length > 0) {
         const mesh = intersects[0].object;
         if (mesh.userData.data) {
-          this.showDialog(mesh.userData.data.name, mesh.userData.data);
+          this.showDialog(mesh.userData.data);
         } else {
           this.showDialog("Mesh Clicked", { info: "You clicked on a mesh!" });
         }
       }
     },
-    showDialog(title, data) {
+    showDialog(data) {
       this.dialog.visible = true;
-      this.dialog.title = title;
+      this.dialog.title = data.name;
       this.dialog.data = data;
     },
     jsonToTreeItems(obj) {
@@ -280,6 +288,7 @@ export default {
     loadGemmaCurtain() {
       compas.loadGemmaCurtain().then((response) => {
         this.addMesh(
+          0,
           response.vertices,
           response.edges,
           response.faces,
@@ -290,6 +299,7 @@ export default {
     loadCooper() {
       compas.loadCooper().then((response) => {
         this.addMesh(
+          1,
           response.vertices,
           response.edges,
           response.faces,

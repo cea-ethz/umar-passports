@@ -9,13 +9,12 @@ import UmarPassportTraditionalModule from "../ignition/modules/UmarPassportTradi
    --network localhost
  */
 task("mint-nft", "Mints an NFT")
-  .addParam<string>("tokenId", "The token ID of the NFT")
-  .addParam<string>("to", "The address to mint the NFT to")
+  .addParam<String>("to", "The address to mint the NFT to")
   .addParam<String>("uri", "The URI of the NFT")
   .setAction(async (taskArgs, hre) => {
     try {
       console.log("Running mint-nft task with args:", taskArgs);
-      const { tokenId, to, uri } = taskArgs;
+      const { to, uri } = taskArgs;
 
       const { umarPassportTraditional } = await hre.ignition.deploy(
         UmarPassportTraditionalModule
@@ -25,8 +24,10 @@ task("mint-nft", "Mints an NFT")
         await umarPassportTraditional.getAddress()
       );
 
-      await umarPassportTraditional.safeMint(tokenId, to, uri);
-      console.log("Minted NFT to:", to);
+      const tokenIdBefore = await umarPassportTraditional.nextTokenId();
+      await umarPassportTraditional.safeMint(to, uri);
+
+      console.log(`Minted NFT to ${to} with tokenId ${tokenIdBefore}`);
     } catch (error) {
       console.error(error);
     }
