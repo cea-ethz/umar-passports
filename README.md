@@ -21,7 +21,7 @@ npx hardhat node
 With the node running, you can deploy the Umar Passport contract in a separate terminal window:
 
 ```bash
-npx hardhat ignition deploy ignition/modules/UmarPassport.ts --network localhost
+npx hardhat ignition deploy ignition/modules/UmarPassportTraditional.ts --network localhost
 ```
 
 ## Deployment on Sepolia

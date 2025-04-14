@@ -1,3 +1,4 @@
 {
-  "UmarPassportModule#UmarPassport": "0xB27fE598C87FB6E7E1ca440B2E08f001389A768D"
+  "UmarPassportModule#UmarPassport": "0xB27fE598C87FB6E7E1ca440B2E08f001389A768D",
+  "UmarPassportLazyMintModule#UmarPassportLazyMint": "0x9262A74a9A3EDDdea8B40071409A1C596dFF1e0d"
 }
