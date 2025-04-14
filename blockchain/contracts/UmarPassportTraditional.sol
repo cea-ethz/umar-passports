@@ -7,15 +7,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract UmarPassportTraditional is ERC721, ERC721URIStorage, Ownable {
-    uint256 private _nextTokenId;
-
+    
     constructor(address initialOwner)
         ERC721("UmarPassportTraditional", "UPT")
         Ownable(initialOwner)
     {}
 
-    function safeMint(address to, string memory uri) public onlyOwner {
-        uint256 tokenId = _nextTokenId++;
+    function safeMint(uint256 tokenId, address to, string memory uri) public onlyOwner {
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
     }
