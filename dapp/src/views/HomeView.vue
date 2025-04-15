@@ -1,15 +1,20 @@
 <template>
   <v-toolbar class="bg-white">
     <img src="../assets/compas_logo_blue.png" width="48px" class="mx-2" />
-    <v-toolbar-title> COMPAS WebViewer </v-toolbar-title>
-    <v-btn @click="ping" variant="elevated" class="mx-1"> Ping </v-btn>
-    <v-btn @click="boxToSubdividedMesh" variant="elevated" class="mx-1">
-      Getting Started
+    <v-toolbar-title> UMAR </v-toolbar-title>
+    <v-btn @click="addGLB('umar')" variant="elevated" class="mx-1">
+      UMAR
     </v-btn>
-    <v-btn @click="loadGemmaCurtain" variant="elevated" class="mx-1">
+    <v-btn @click="addGLB('bricks', true)" variant="elevated" class="mx-1">
+      Bricks
+    </v-btn>
+    <v-btn
+      @click="addGLB('gemma_curtain', true)"
+      variant="elevated"
+      class="mx-1"
+    >
       Gemma Curtain
     </v-btn>
-    <v-btn @click="loadCooper" variant="elevated" class="mx-1"> Cooper </v-btn>
     <WalletConnector />
   </v-toolbar>
   <MintingStrategies />
@@ -68,6 +73,7 @@
 <script>
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import compas from "@/api/compas";
 import WalletConnector from "@/components/WalletConnector.vue";
 import MintingStrategies from "@/components/MintingStrategies.vue";
@@ -130,8 +136,7 @@ export default {
         this.config.camera.far
       );
       camera.up.set(0, 0, 1);
-      camera.position.set(0, -7, 7);
-      camera.lookAt(0, 0, 0);
+      camera.position.set(15, 25, 1.2);
       this.camera = camera;
 
       const renderer = new THREE.WebGLRenderer({
@@ -142,6 +147,16 @@ export default {
       renderer.setAnimationLoop(() => {
         renderer.render(scene, camera);
       });
+
+      // Add ambient light for overall scene illumination
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+      scene.add(ambientLight);
+
+      // Add directional light for shadows and depth
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+      directionalLight.position.set(5, 5, 5);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
 
       const container = document.getElementById("three-container");
       container.appendChild(renderer.domElement);
@@ -178,29 +193,82 @@ export default {
       grid.rotation.x = Math.PI / 2;
       scene.add(grid);
     },
-    addMesh(tokenId, vertices, edges, faces, jsonData) {
-      const positions = new THREE.Float32BufferAttribute(vertices, 3);
-      const meshgeometry = new THREE.BufferGeometry();
-      meshgeometry.setAttribute("position", positions);
-      meshgeometry.setIndex(faces);
-      const meshmaterial = new THREE.MeshBasicMaterial({
-        color: 0xcccccc,
-        side: THREE.DoubleSide,
-      });
-      const mesh = new THREE.Mesh(meshgeometry, meshmaterial);
-      mesh.userData.interactive = true;
-      mesh.userData.data = jsonData;
-      mesh.userData.data.tokenId = tokenId;
-      this.selectableMeshes.push(mesh);
+    addGLB(name, selectable = false) {
+      const loader = new GLTFLoader();
 
-      const linegeometry = new THREE.BufferGeometry();
-      linegeometry.setAttribute("position", positions);
-      linegeometry.setIndex(edges);
-      const linematerial = new THREE.LineBasicMaterial({ color: 0x888888 });
-      const line = new THREE.LineSegments(linegeometry, linematerial);
+      const loadModel = (jsonData = null) => {
+        loader.load(
+          `/compas-webviewer/${name}.glb`,
+          (gltf) => {
+            const model = gltf.scene;
+            model.userData.interactive = true;
 
-      scene.add(mesh);
-      scene.add(line);
+            // Set all materials to white and transparent, and add edge geometry
+            model.traverse((child) => {
+              if (child.isMesh) {
+                if (!selectable) {
+                  // Set the main mesh material
+                  child.material = new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.2,
+                  });
+                } else {
+                  // Set the main mesh material
+                  child.material = new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                  });
+
+                  child.userData.data = jsonData;
+                  child.userData.data.tokenId = jsonData?.tokenId || "1231231";
+                  child.geometry.computeVertexNormals();
+                  // child.geometry.computeFaceNormals();
+                  this.selectableMeshes.push(child);
+                }
+
+                // Create edges geometry for non-coplanar faces
+                const edges = new THREE.EdgesGeometry(child.geometry, 30); // 15 degrees threshold
+                const line = new THREE.LineSegments(
+                  edges,
+                  new THREE.LineBasicMaterial({
+                    color: 0x555555,
+                    transparent: true,
+                    opacity: 0.1,
+                    linewidth: 1,
+                  })
+                );
+
+                // Add the line segments as a child of the mesh
+                scene.add(line);
+              }
+            });
+
+            scene.add(model);
+          },
+          (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+          },
+          (error) => {
+            console.error("An error happened while loading the model:", error);
+          }
+        );
+      };
+
+      if (selectable) {
+        // Load JSON file first if selectable
+        fetch(`/compas-webviewer/${name}.json`)
+          .then((response) => response.json())
+          .then((jsonData) => {
+            loadModel(jsonData);
+          })
+          .catch((error) => {
+            console.error("Error loading JSON file:", error);
+            loadModel(); // Load model anyway even if JSON fails
+          });
+      } else {
+        // Load model directly if not selectable
+        loadModel();
+      }
     },
     onMouseMove(event) {
       const containerRect = event.target.getBoundingClientRect();
@@ -212,14 +280,17 @@ export default {
       const intersects = this.raycaster.intersectObjects(this.selectableMeshes);
       if (intersects.length > 0) {
         const mesh = intersects[0].object;
-        mesh.material.color.set(0xff0000);
+        mesh.material.color.set(0xffff00);
         event.target.style.cursor = "pointer";
       } else {
         this.selectableMeshes.forEach((mesh) => {
-          mesh.material.color.set(0xcccccc);
+          mesh.material.color.set(0xffffff);
         });
         event.target.style.cursor = "default";
       }
+
+      console.log(this.camera.position);
+      console.log(this.camera.target);
     },
     onMeshClick(event) {
       const containerRect = event.target.getBoundingClientRect();
@@ -278,39 +349,10 @@ export default {
         this.showDialog("Info", { info: `ping says: ${response}` });
       });
     },
-    boxToSubdividedMesh() {
-      compas
-        .boxToSubdividedMesh({ xsize: 1, ysize: 1, zsize: 1 })
-        .then((response) => {
-          this.addMesh(response.vertices, response.edges, response.faces);
-        });
-    },
-    loadGemmaCurtain() {
-      compas.loadGemmaCurtain().then((response) => {
-        this.addMesh(
-          0,
-          response.vertices,
-          response.edges,
-          response.faces,
-          gemmaCurtainJson
-        );
-      });
-    },
-    loadCooper() {
-      compas.loadCooper().then((response) => {
-        this.addMesh(
-          1,
-          response.vertices,
-          response.edges,
-          response.faces,
-          cooperJson
-        );
-      });
-    },
   },
   mounted() {
     this.initThree();
-    this.addGrid();
+    // this.addGrid();
   },
 };
 </script>
