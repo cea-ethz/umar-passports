@@ -10,33 +10,33 @@ import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    base: "/compas-webviewer/",
-    plugins: [
-        Vue({
-            template: { transformAssetUrls },
-        }),
-        // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
-        Vuetify(),
-        Components(),
-        ViteFonts({
-            google: {
-                families: [
-                    {
-                        name: "Roboto",
-                        styles: "wght@100;300;400;500;700;900",
-                    },
-                ],
-            },
-        }),
-    ],
-    define: { "process.env": {} },
-    resolve: {
-        alias: {
-            "@": fileURLToPath(new URL("./src", import.meta.url)),
-        },
-        extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
+  base: "/",
+  plugins: [
+    Vue({
+      template: { transformAssetUrls },
+    }),
+    // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
+    Vuetify(),
+    Components(),
+    ViteFonts({
+      google: {
+        families: [
+          {
+            name: "Roboto",
+            styles: "wght@100;300;400;500;700;900",
+          },
+        ],
+      },
+    }),
+  ],
+  define: { "process.env": {} },
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
-    server: {
-        port: 3000,
-    },
+    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
+  },
+  server: {
+    port: 3000,
+  },
 });

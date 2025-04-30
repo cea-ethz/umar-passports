@@ -12,7 +12,6 @@
     <v-btn @click="loadCooper" variant="elevated" class="mx-1"> Cooper </v-btn>
     <WalletConnector />
   </v-toolbar>
-  <MintingStrategies />
   <v-container class="pa-0 ma-0">
     <v-row no-gutters>
       <v-col cols="12" class="pa-0 ma-0">
@@ -70,7 +69,6 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import compas from "@/api/compas";
 import WalletConnector from "@/components/WalletConnector.vue";
-import MintingStrategies from "@/components/MintingStrategies.vue";
 import JsonTree from "@/components/JsonTree.vue";
 
 import cooperJson from "@/data/cooper.json";
@@ -82,7 +80,6 @@ scene.background = new THREE.Color(0xeeeeee);
 export default {
   components: {
     WalletConnector,
-    MintingStrategies,
     JsonTree,
   },
   data: () => ({

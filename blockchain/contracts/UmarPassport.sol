@@ -6,11 +6,11 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract UmarPassportTraditional is ERC721, ERC721URIStorage, Ownable {
+contract UmarPassport is ERC721, ERC721URIStorage, Ownable {
     uint256 public nextTokenId;
 
     constructor(address initialOwner)
-        ERC721("UmarPassportTraditional", "UPT")
+        ERC721("UmarPassport", "UPT")
         Ownable(initialOwner)
     {}
 

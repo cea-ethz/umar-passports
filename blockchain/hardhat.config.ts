@@ -4,7 +4,6 @@ import "dotenv/config";
 
 import "./tasks/check-token";
 import "./tasks/mint-nft";
-import "./tasks/lazy-mint-nft";
 
 if (!process.env.ACCOUNT_PRIVATE_KEY) {
   throw new Error("ACCOUNT_PRIVATE_KEY is required");

@@ -7,22 +7,25 @@ import hre from "hardhat";
 async function main() {
   const signers = await hre.ethers.getSigners();
 
+  // TODO: Replace with your contract address
+  const contractaddress = "";
   const to = signers[0].address;
 
+  // TODO: Replace with your metadata IPFS URIs
   const NFTs = [
+    // Example: Gemma Curtain
     {
-      name: "Gemma Curtain",
       uri: "ipfs://bafkreib3bwh7fwldegpsqtuzwjggw5jkafdli4mhctdiyud4iv63i3d6ni",
     },
+    // Example: Copper
     {
-      name: "Cooper",
       uri: "ipfs://bafkreifwhnqocglfsg7e6g35mjyiuzpmx5bv5yckgwsnlyrikbgixtmqmu",
     },
   ];
 
   for (const nft of NFTs) {
     const { uri } = nft;
-    await hre.run("mint-nft", { to, uri });
+    await hre.run("mint-nft", { contractaddress, to, uri });
   }
 }
 

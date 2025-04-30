@@ -22,4 +22,4 @@ pnpm-debug.log*
 *.sw?
 
 __pycache__/
-.venv
+venv

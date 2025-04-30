@@ -1,41 +1,82 @@
-# COMPAS WebViewer
+# Decentralized Application based on COMPAS WebViewer
 
-This repo provides a basic Vue + ThreeJS + FastAPI setup for experimenting with COMPAS in the browser.
-The repo is configured for local development, with COMPAS running on a local server...
+This component is an extension of [COMPAS WebViewer](https://github.com/compas-dev/compas-webviewer).
 
-## Installation
+## Prerequisites
 
-Set up the Vue project.
+### Only If You Deployed Your Contract On Sepolia
+
+In `./views/HomeView.vue`, update the contract address from:
+
+```javascript
+<v-btn
+    :href="`https://testnets.opensea.io/assets/sepolia/0xb8Bb0430e7c3392642Cd141824FBf7D300F18901/${dialog.data.tokenId}`"
+```
+
+Replace `0xb8Bb0430e7c3392642Cd141824FBf7D300F18901` with your own deployed contract address on Sepolia, if applicable.
+
+### Only If You Minted Your Own NFTs
+
+#### Adding `.obj` and `.json` Files
+
+This application displays `.obj` files representing building components linked to NFTs. To use your own assets:
+
+1. Add or modify `.obj` and `.json` files in the `/data` directory to reflect your minted NFTs.
+2. If you're only reproducing the default demo with our predefined NFTs, you can skip this step.
+
+#### Modifying Backend API Endpoints
+
+To serve your own object data:
+
+1. Open `server.py` and create a new route using:
+
+```javascript
+@app.get("/load_<your-building-material-name>")
+def load_<your-building-material-name>():
+    ...
+```
+
+2. In `./views/HomeView.vue`, add a new function similar to `loadCooper()`.
+
+3. Also add a corresponding button:
+
+```javascript
+<v-btn @click="loadCooper" variant="elevated" class="mx-1"> Cooper </v-btn>
+```
+
+Replace the name and function appropriately for your material.
+
+## Running the Prototype
+
+### Installation
+
+Set up the Vue project:
 
 ```bash
 yarn install
 ```
 
-Install COMPAS and other required Python packages.
+Install COMPAS and required Python packages in a virtual environment:
 
 ```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Starting the Client
-
-To start the frontend development server with hot-reload, run the following command. The server will be accessible at [http://localhost:3000](http://localhost:3000):
-
-```bash
-yarn dev
-```
-
-## Starting the Server
+### Starting the Server
 
 To start the COMPAS backend server:
 
 ```bash
+source venv/bin/activate # if not already done
 python server.py
 ```
 
-## Usage
+### Starting the Client
 
-The viewer is available at [http://localhost:3000](http://localhost:3000).
-It has a few buttons that run some basic functions on the server and visualise the result in the ThreeJS CAD environment.
+To run the Vue frontend with hot-reload (available at [http://localhost:3000](http://localhost:3000)):
 
-The "Getting Started" button runs the code from the corresponding example on the COMPAS main website: [Getting Started](https://tomvanmele.github.io/compas2.dev/#/gettingstarted).
+```bash
+yarn dev
+```

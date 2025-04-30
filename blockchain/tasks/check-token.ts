@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 
-const ERC721_ABI = [
+const ABI = [
   "function tokenURI(uint256 tokenId) public view returns (string)",
   "function ownerOf(uint256 tokenId) public view returns (address)",
 ];
@@ -12,8 +12,8 @@ const ERC721_ABI = [
    --tokenid "0" \
    --network localhost
  */
-task("check-token", "Fetches the URI of an NFT")
-  .addParam<string>("contractaddress", "The address to mint the NFT to")
+task("check-token", "Fetches the Token URI and Owner of an NFT")
+  .addParam<String>("contractaddress", "The address of the NFT contract")
   .addParam<String>("tokenid", "The token ID of the NFT")
   .setAction(async (taskArgs, hre) => {
     console.log("Running check-token task with args:", taskArgs);
@@ -24,7 +24,7 @@ task("check-token", "Fetches the URI of an NFT")
 
     const contract = new hre.ethers.Contract(
       contractaddress,
-      ERC721_ABI,
+      ABI,
       contractRunner
     );
 
